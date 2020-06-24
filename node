@@ -1,6 +1,21 @@
+本机：
+172.20.110.72 
+无docker、无任何环境 ——> 安装了docker、docker-compose和go，配置了fabric单机环境（1.4.0版）
+作为orderer
+
 直连：
-172.16.101.247 luzhenyan/1 有环境
+172.16.101.247 luzhenyan/1 
+有docker、无docker-compose和go ——>安装docker-compose显示依赖冲突，pip卸载重装docker ——> 安装了docker、docker-compose和go，配置了fabric单机环境（1.4.0版）
+作为peer0.org0
+
 用246或247跳板过去：
-172.16.0.103 luzhenyan/1 在跑mesos
-172.16.0.122 lzy/lzy sudo 和 su root用不了，有docker
-172.16.0.123 lzy/lzy 无docker
+172.16.0.103 luzhenyan/1 
+在跑mesos
+
+172.16.0.122 lzy/lzy 
+sudo 和 su root用不了，有docker
+作为peer1.org0
+
+172.16.0.123 lzy/lzy 
+无docker、无任何环境 ——> 安装了docker、docker-compose和go，配置了fabric单机环境（1.4.0版）
+作为peer0.org1
