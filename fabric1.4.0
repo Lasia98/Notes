@@ -1,0 +1,105 @@
+zhuliang@172.16.101.247
+2882661
+一、环境：
+1、docker
+2、docker-compose
+（1）安装
+方式一
+pip安装：sudo pip install docker-compose（pip安装不好用）
+说明
+运行docker-compose时报错：SyntaxError: Non-ASCII character '\xe2' in file /usr/local/lib/python2.7/dist-packages/zipp.py on line 154, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
+
+Error: No such container: cli
+方式二
+从github上下载docker-compose二进制文件安装：sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+（2）添加可执行权限：sudo chmod +x /usr/local/bin/docker-compose
+（3）测试安装结果：docker-compose --version
+
+3、go语言
+（1）下载：wget https://studygolang.com/dl/golang/go1.11.linux-amd64.tar.gz
+（2）解压：tar xzvf go1.11.linux-amd64.tar.gz -C /usr/local
+（3）配置环境变量：sudo vi /etc/profile
+export GOROOT=/usr/local/go
+export PATH=\$GOPATH/bin:\$GOROOT/bin:\$PATH
+（4）生效：source /etc/profile
+（5）测试安装结果：
+go run test.go
+sudo go run test.go
+test.go:
+package main
+
+import "fmt"
+
+func main() {
+   fmt.Println("Hello, World!")
+}
+
+说明
+问题及解决：go语言的环境变量
+使用source仅在当前终端下生效了，重启后才在全局生效
+想要使用sudo go，需要修改/etc/sudoers
+配置 /etc/sudoers 文件中的 Defaults secure_path 这一项
+将 $GOROOT/bin 路径加入进去（使用绝对路径，如：/home/moonlightwatch/go/bin/）
+如：
+Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/local/go/bin"
+
+二、单机Fabric配置
+1、创建目录：
+sudo mkdir -p $GOPATH/src/github.com/hyperledger
+cd $GOPATH/src/github.com/hyperledger
+2、下载： git clone https://github.com/hyperledger/fabric-samples.git
+3、选择版本（不选的话默认最新版本）：
+cd fabric-samples
+sudo git checkout -b sample v1.4.0
+4、构建镜像：
+方式一
+使用fabric-samples中的bootstrap.sh脚本构建镜像（不好使）
+cd $GOPATH/src/github.com/hyperledger/fabric-samples/scripts
+./bootstrap.sh 1.4.0 1.4.0 0.4.14（指定1.4.0版本）
+方式二
+使用fabric中的bootstrap.sh脚本（会自动下载fabric-samples）
+git clone https://github.com/hyperledger/fabric.git
+cd ./fabric/scripts
+./bootstrap.sh(默认安装最新版本)
+方式三
+使用官方文档中的该指令（会找不到1.4.7的镜像）
+sudo curl -sSL http://bit.ly/2ysbOFE | sudo bash -s -- 1.4.0 1.4.0 0.4.14
+
+说明：
+fabric中的bootstrap.sh作用：
+（1）从github上克隆 hyperledger/fabric-samples并进入该目录，然后切换到适当的版本
+（2）在fabric-samples目录下安装特定平台的 Hyperledger Fabric 二进制可执行文件和配置文件
+（3）下载指定版本的Hyperledger Fabric 的docker镜像
+（来自https://zhuanlan.zhihu.com/p/130870450）
+
+问题：
+fabric-samples中的bootstrap.sh报错curl: (6) Could not resolve host: nexus.hyperledger.org
+由于 “nexus.hyperledger.org” 仓库停用
+解决：
+按照官方文档（https://hyperledger-fabric.readthedocs.io/en/release-1.4/install.html）说明
+sudo curl -sSL http://bit.ly/2ysbOFE | sudo bash -s -- 1.4.0 1.4.0 0.4.14
+
+关于切换版本、安装二进制文件和docker镜像
+bootstrap脚本：在书的第3章和博客的sample部分都使用bootstrap脚本进行镜像的下载,fabric中的脚本好使，fabric-sample中的脚本不好使
+源码编译：在书的第11章和解决nexus问题的知乎文章中使用了直接下载fabric及fabric-ca源码并编译的方式，书中使用make docker构建镜像，文章中使用make release编译fabric源码得到二进制文件
+另外一种获取脚本的方式：官方文档中使用sudo curl -sSL http://bit.ly/2ysbOFE | sudo bash -s -- 1.4.0 1.4.0 0.4.14
+
+5、使用sample:first-network
+sudo ./byfn.sh -m up
+报错：
+Error: failed to create deliver client for orderer: orderer client failed to connect to orderer.example.com:7050: failed to create new connection: context deadline exceeded
+!!!!!!!!!!!!!!! Channel creation failed !!!!!!!!!!!!!!!!
+========= ERROR !!! FAILED to execute End-2-End Scenario ===========
+
+6、使用sample：test-network
+此处的操作参考官方文档https://hyperledger-fabric.readthedocs.io/en/release-2.1/test_network.html
+（1）启动网络：sudo ./network.sh up
+This command creates a Fabric network that consists of two peer nodes, one ordering node. No channel is created when you run ./network.sh up
+（2）创建channel：sudo ./network.sh createChannel
+报错：Error: failed to create deliver client for orderer: orderer client failed to connect to localhost:7050: failed to create new connection: connection error: desc = "transport: error while dialing: dial tcp 127.0.0.1:7050: connect: connection refused"
+解决：切换到first-network,执行sudo ./byfn.sh down
+（3）Starting a chaincode on the channel：sudo ./network.sh deployCC
+
+三、多节点fabric
+节点
+
