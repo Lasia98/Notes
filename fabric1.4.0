@@ -1,6 +1,7 @@
 zhuliang@172.16.101.247
 2882661
-一、环境：
+
+一、环境
 1、docker
 （1）设置存储库
 更新apt软件包索引并安装软件包以允许apt通过HTTPS使用存储库：
@@ -11,6 +12,7 @@ $ sudo apt-get install \
     curl \
     gnupg-agent \
     software-properties-common
+    
 （2）添加Docker的官方GPG密钥：
 $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88通过搜索指纹的后8个字符，验证您现在是否拥有带有指纹的密钥 。
@@ -20,39 +22,50 @@ pub   rsa4096 2017-02-22 [SCEA]
       9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88
 uid           [ unknown] Docker Release (CE deb) <docker@docker.com>
 sub   rsa4096 2017-02-22 [S]
+
 （3）使用以下命令来设置稳定的存储库
 注意：下面的lsb_release -cs子命令返回Ubuntu发行版的名称，例如xenial。有时，在Linux Mint等发行版中，您可能需要更改$(lsb_release -cs) 为父Ubuntu发行版。例如，如果您使用 Linux Mint Tessa，则可以使用bionic。Docker对未经测试和不受支持的Ubuntu发行版不提供任何保证。
 $ sudo add-apt-repository \
    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
    stable"
+   
 （4）安装DOCKER引擎
 更新apt程序包索引，并安装最新版本的Docker Engine和容器
  $ sudo apt-get update
  $ sudo apt-get install docker-ce docker-ce-cli containerd.io
+ 
 （5）运行hello-world 映像来验证是否正确安装了Docker Engine
 $ sudo docker run hello-world
+
+
 2、docker-compose
 （1）安装
 方式一
-pip安装：sudo pip install docker-compose（pip安装不好用）
+pip安装：sudo pip install docker-compose（不好用）
 说明
 运行docker-compose时报错：SyntaxError: Non-ASCII character '\xe2' in file /usr/local/lib/python2.7/dist-packages/zipp.py on line 154, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details
 
 Error: No such container: cli
+
 方式二
 从github上下载docker-compose二进制文件安装：sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
 （2）添加可执行权限：sudo chmod +x /usr/local/bin/docker-compose
 （3）测试安装结果：docker-compose --version
 
+
 3、go语言
 方法一 手动安装
 （1）下载：wget https://studygolang.com/dl/golang/go1.11.linux-amd64.tar.gz
+
 （2）解压：tar xzvf go1.11.linux-amd64.tar.gz -C /usr/local
+
 （3）配置环境变量：sudo vi /etc/profile
 export GOROOT=/usr/local/go
 export PATH=\$GOPATH/bin:\$GOROOT/bin:\$PATH
+
 （4）生效：source /etc/profile
+
 （5）测试安装结果：
 go run test.go
 sudo go run test.go
@@ -66,7 +79,7 @@ func main() {
 }
 
 说明
-问题及解决：go语言的环境变量
+问题一：go语言的环境变量
 使用source仅在当前终端下生效了，重启后才在全局生效
 想要使用sudo go，需要修改/etc/sudoers
 配置 /etc/sudoers 文件中的 Defaults secure_path 这一项
@@ -74,29 +87,38 @@ func main() {
 如：
 Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/local/go/bin"
 
+问题二：studygolang网站无法连接
+直接使用方法二apt安装
 
 方法二
 sudo apt install golang
+
+
 二、单机Fabric配置
 1、创建目录：
 sudo mkdir -p $GOPATH/src/github.com/hyperledger
 cd $GOPATH/src/github.com/hyperledger
+
 2、下载： git clone https://github.com/hyperledger/fabric-samples.git
+
 3、选择版本（不选的话默认最新版本）：
 cd fabric-samples
 sudo git checkout -b sample v1.4.0
+
 4、构建镜像：
 方式一
 使用fabric-samples中的bootstrap.sh脚本构建镜像（不好使）
 cd $GOPATH/src/github.com/hyperledger/fabric-samples/scripts
-./bootstrap.sh 1.4.0 1.4.0 0.4.14（指定1.4.0版本）
+./bootstrap.sh 1.4.0 1.4.0 0.4.14 (可指定版本号，也可以默认安装最新版本)
+
 方式二
 使用fabric中的bootstrap.sh脚本（会自动下载fabric-samples）
 git clone https://github.com/hyperledger/fabric.git
 cd ./fabric/scripts
-./bootstrap.sh(默认安装最新版本)
+./bootstrap.sh 1.4.0 1.4.0 0.4.14 (可指定版本号，也可以默认安装最新版本)
+
 方式三
-使用官方文档中的该指令（会找不到1.4.7的镜像）
+使用官方文档中的该指令（会找不到1.4.7的镜像，也可能出错）
 sudo curl -sSL http://bit.ly/2ysbOFE | sudo bash -s -- 1.4.0 1.4.0 0.4.14
 
 说明：
@@ -133,6 +155,7 @@ This command creates a Fabric network that consists of two peer nodes, one order
 报错：Error: failed to create deliver client for orderer: orderer client failed to connect to localhost:7050: failed to create new connection: connection error: desc = "transport: error while dialing: dial tcp 127.0.0.1:7050: connect: connection refused"
 解决：切换到first-network,执行sudo ./byfn.sh down
 （3）Starting a chaincode on the channel：sudo ./network.sh deployCC
+
 
 三、多节点fabric
 节点
