@@ -46,6 +46,7 @@ Error: No such container: cli
 （3）测试安装结果：docker-compose --version
 
 3、go语言
+方法一 手动安装
 （1）下载：wget https://studygolang.com/dl/golang/go1.11.linux-amd64.tar.gz
 （2）解压：tar xzvf go1.11.linux-amd64.tar.gz -C /usr/local
 （3）配置环境变量：sudo vi /etc/profile
@@ -73,6 +74,9 @@ func main() {
 如：
 Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/local/go/bin"
 
+
+方法二
+sudo apt install golang
 二、单机Fabric配置
 1、创建目录：
 sudo mkdir -p $GOPATH/src/github.com/hyperledger
