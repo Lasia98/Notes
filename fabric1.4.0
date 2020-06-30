@@ -158,5 +158,72 @@ This command creates a Fabric network that consists of two peer nodes, one order
 
 
 三、多节点fabric
-节点
+1、按照单机方式将各个节点上的环境配置好
+（1）节点ip
+172.16.101.246
+172.16.101.247
+172.16.0.122
+172.16.0.123
+
+（2）配置环境
+docker
+docker-compose
+go
+fabric 1.4.0
+
+（3）运行fisrst-network示例确保配置成功
+sudo ./byfn.sh generate
+sudo ./byfn.sh up
+sudo ./byfn.sh down
+
+
+2、在一台机器上生成证书和创世区块
+（1）使用crytogen和crypto-config.yaml生成MSP证书（这里使用了first-network中的yaml文件）
+cd ~/fabric/scripts/fabric-samples/bin
+sudo ./cryptogen generate --config=/home/luzhenyan/fabric/scripts/fabric-samples/first-network/crypto-config.yaml
+在当前目录下生成了
+crypto-config
+    |
+    —— —— ordererOrganizations
+    |
+    —— —— peerOrganizations
+说明：
+MSP证书是超级账本网络实体的身份标识，实体在通信和交易时使用证书进行签名和认证
+crypto-config.yaml文件定义了组织结构，据此可以为组织和成员生成数字证书和签名密钥
+    
+（2）使用configtxgen和configtx.yaml生成排序服务创世区块
+添加环境变量指定configtx.yaml的位置：
+cd ~/fabric/scripts/fabric-samples/first-network
+export FABRIC_CFG_PATH=$PWD
+cd ~/fabric/scripts/fabric-samples/bin
+./configtxgen -profile TwoOrgsOrdererGenesis -outputBlock ./channel-artifacts/genesis.block
+
+说明：
+由于前面的安装等操作都使用了sudo命令，导致文件许多权限为root用户的，环境变量也是root用户的
+这里如果使用sudo执行configtxgen会导致读取不到修改过的环境变量
+如果不使用sudo又有文件权限问题，最后使用chmod修改了文件权限，再执行./configtxgen
+以后尽量不要使用sudo！！！好麻烦！！！
+
+（3）使用configtxgen生成通道配置创世区块
+设置环境变量通道名称：export CHANNEL_NAME=mychannel
+./configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
+
+（4）定义组织锚节点
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
