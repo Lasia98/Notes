@@ -197,6 +197,7 @@ cd ~/fabric/scripts/fabric-samples/first-network
 export FABRIC_CFG_PATH=$PWD
 cd ~/fabric/scripts/fabric-samples/bin
 ./configtxgen -profile TwoOrgsOrdererGenesis -outputBlock ./channel-artifacts/genesis.block
+在当前目录生成了channel-artifacts目录，并在该目录下生成创世区块geness.block，区块内容包括了联盟和组织信息、通道的访问控制策略等
 
 说明：
 由于前面的安装等操作都使用了sudo命令，导致文件许多权限为root用户的，环境变量也是root用户的
@@ -207,10 +208,12 @@ cd ~/fabric/scripts/fabric-samples/bin
 （3）使用configtxgen生成通道配置创世区块
 设置环境变量通道名称：export CHANNEL_NAME=mychannel
 ./configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
+在channel-artifacts目录下生成通道配置channel.tx
 
 （4）定义组织锚节点
-
-
+./configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
+./configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org2MSP
+在channel-artifacts目录下生成锚节点配置Org1MSPanchors.tx和Org2MSPanchors.tx
 
 
 
