@@ -218,6 +218,14 @@ cd ~/fabric/scripts/fabric-samples/bin
 （5）将上述配置文件复制到其他节点
 即目录crypto-config和channel-artifacts
 
+sudo cp -r crypto-config ~/fabric/config/
+cp -r channel-artifacts ~/fabric/config/
+
+sudo scp -r config luzhenyan@ccrfox246:~/hyperledger/fabric/config
+sudo scp -r config lzy@ccrfox122:~/hyperledger/fabric/config
+sudo scp -r config lzy@ccrfox123:~/hyperledger/fabric/config
+
+（6）设置docker-compose文件
 
 
 
