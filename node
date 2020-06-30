@@ -1,7 +1,6 @@
 本机：
 172.20.110.72 
 无docker、无任何环境 ——> 安装了docker、docker-compose和go，配置了fabric单机环境（1.4.0版）
-作为peer1.org0
 
 直连：
 172.16.101.246 luzhenyan/1 
@@ -17,8 +16,8 @@
 #在跑mesos
 
 172.16.0.122 lzy/lzy 
-作为peer0.org1
+作为peer1.org0
 
 172.16.0.123 lzy/lzy 
 无docker、无任何环境 ——> 安装了docker、docker-compose和go，配置了fabric单机环境（1.4.0版）
-作为peer1.org1
+作为peer0.org1
