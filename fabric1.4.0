@@ -215,6 +215,10 @@ cd ~/fabric/scripts/fabric-samples/bin
 ./configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org2MSP
 在channel-artifacts目录下生成锚节点配置Org1MSPanchors.tx和Org2MSPanchors.tx
 
+（5）将上述配置文件复制到其他节点
+即目录crypto-config和channel-artifacts
+
+
 
 
 
