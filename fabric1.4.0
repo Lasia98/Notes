@@ -215,7 +215,7 @@ cd ~/fabric/scripts/fabric-samples/bin
 ./configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org2MSP
 在channel-artifacts目录下生成锚节点配置Org1MSPanchors.tx和Org2MSPanchors.tx
 
-（5）将上述配置文件复制到其他节点
+3、将上述配置文件复制到其他节点
 即目录crypto-config和channel-artifacts
 
 sudo cp -r crypto-config ~/fabric/config/
@@ -225,22 +225,26 @@ sudo scp -r config luzhenyan@ccrfox246:~/hyperledger/fabric/config
 sudo scp -r config lzy@ccrfox122:~/hyperledger/fabric/config
 sudo scp -r config lzy@ccrfox123:~/hyperledger/fabric/config
 
-（6）设置docker-compose文件
-以docker-compose-cli.yaml为基础
+4、设置docker-compose文件
+（1）以docker-compose-cli.yaml为基础
 设置
 docker-compose-orderer.yaml 
 docker-compose-peer0org1.yaml
 docker-compose-peer1org1.yaml
 docker-compose-peer0org2.yaml
-新建base目录
+
+（2）新建base目录
 mkdir base
 修改docker-compose-base.yaml，放到当前目录下的base目录中
-将配置文件复制到其他节点
+将peer-base.yaml文件放到base下
 
-（7）在相应节点使用相应的docker-compose文件启动docker镜像
-设置IMAGE_TAG确定启动哪个镜像
+（3）将配置文件复制到其他节点
+
+5、在相应节点使用相应的docker-compose文件启动docker镜像
+（1）设置IMAGE_TAG确定启动哪个镜像
 export IMAGE_TAG=1.4.0
-启动镜像
+
+（2）启动镜像
 sudo docker-compose -f docker-compose-orderer.yaml up -d
 
 说明：
@@ -271,16 +275,51 @@ ERROR: no such image: hyperledger/fabric-orderer:: invalid reference format
 修改/etc/sudoers中的 Defaults env_reset
 改为 Defaults !env_reset
 
+报错
+ERROR: .IOError: [Errno 2] No such file or directory: u'/home/luzhenyan/hyperledger/fabric/config/base/peer-base.yaml'
+原因
+未配置peer-base.yaml
+
+6、进入cli容器中创建channel、各peer加入channel、更新锚节点
+（1）进入cli
+docker exec -it cli bash
+
+（2）创建channel
+ORDERER_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+peer channel create -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/channel.tx --tls true --cafile $ORDERER_CA
+创建完成后ls可以看到原来的目录下多了一个mychannel.block文件
+
+（3）peer加入channel
+peer0.org1
+CLI默认连接的是peer0.org1，将这个Peer加入mychannel只需要运行：
+peer channel join -b mychannel.block
+
+修改CLI的环境变量，使其指向另外的Peer
+peer1.org1
+CORE_PEER_LOCALMSPID="Org1MSP" 
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt 
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp 
+CORE_PEER_ADDRESS=peer1.org1.example.com:7051
+peer channel join -b mychannel.block
+
+peer0.org2
+CORE_PEER_LOCALMSPID="Org2MSP" 
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt 
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp 
+CORE_PEER_ADDRESS=peer0.org2.example.com:7051
+peer channel join -b mychannel.block
+
+（4）更新锚节点
+对于Org1来说，peer0.org1是锚节点，我们需要连接上它并更新锚节点：
+CORE_PEER_LOCALMSPID="Org1MSP" 
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt 
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp 
+CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+peer channel update -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/Org1MSPanchors.tx --tls true --cafile $ORDERER_CA
 
 
-
-
-
-
-
-
-
-
+247突然断掉了
+cli待会儿重设
 
 
 
