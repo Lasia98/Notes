@@ -360,10 +360,14 @@ https://forum.linuxfoundation.org/discussion/856052/lab-4-error-during-chaincode
 害，还没解决，各种删镜像清环境都没用
 
 9、链码查询
+peer chaincode query -C mychannel2 -n mycc -c '{"Args":["query","a"]}'
 
 10、链码调用
+peer chaincode invoke -o orderer.example.com:7050  --tls true --cafile $ORDERER_CA -C mychannel2 -n mycc -c '{"Args":["invoke","a","b","10"]}'
 
-11、生成和使用的配置文件整理
+11、在另一个peer节点上发起查询
+
+12、生成和使用的配置文件整理
 （1）使用crytogen和crypto-config.yaml生成MSP证书
 在当前目录下生成了
 crypto-config
