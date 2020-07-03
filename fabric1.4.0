@@ -16,6 +16,23 @@ $ sudo apt-get install \
 （2）添加Docker的官方GPG密钥：
 $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88通过搜索指纹的后8个字符，验证您现在是否拥有带有指纹的密钥 。
+说明：
+curl的参数
+-f不输出错误
+ -f, --fail
+(HTTP) Fail silently (no output at all) on server errors.
+使用`-L`参数，curl就会自动跳转到新的网址
+-s参数将不输出错误和进度信息
+-s, --silent
+Silent or quiet mode. Don't show progress meter or error messages.  
+Makes Curl mute. It will still output the data you ask for, potentially even to the terminal/stdout unless you redirect it.
+-S参数指定只输出错误信息，通常与-s一起使用
+-S, --show-error
+When used with -s it makes curl show an error message if it fails.
+
+apt-key命令
+用于管理Debian Linux系统中的软件包密钥。每个发布的deb包，都是通过密钥认证的，apt-key用来管理密钥。
+
 $ sudo apt-key fingerprint 0EBFCD88
 结果：
 pub   rsa4096 2017-02-22 [SCEA]
