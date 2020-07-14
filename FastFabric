@@ -1,0 +1,34 @@
+一、环境配置（在可以运行Fabric的基础上）
+1、go语言版本
+1.7以下不可以用
+卸载旧版本
+如果使用apt-get安装
+sudo apt-get remove golang
+sudo apt-get autoremove
+2、go语言环境配置
+vim /etc/profile
+
+#go
+#root
+export PATH=$PATH:/usr/local/go/bin
+export GOROOT=/usr/local/go
+#workpath
+export GOPATH=/home/luzhenyan/go
+export PATH=$PATH:$GOPATH/bin
+
+二、FastFabric
+1、下载到指定目录
+2、添加
+3、配置脚本参数
+（1）custom_parameters.sh
+4、运行脚本
+（1）Run create_artifact.sh to create the prerequisite files to setup the network, channel and anchor peer.
+（2）
+For the following steps it is advised to run them in different terminals or use tmux.
+Run run_orderer.sh on the respective server that should form the ordering service
+Run run_storage.sh on the server that should persist the blockchain and world state
+Run run_endorser.sh on any server that should act as a decoupled endorser
+Run run_fastpeer.sh on the server that should validate incoming blocks
+Run channel_setup.sh on any server in the network.
+Run chaincode_setup.sh on any server in the network.
+Example: ./chaincode_setup.sh 0 10 100
