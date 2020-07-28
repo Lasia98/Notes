@@ -18,6 +18,8 @@ export PATH=$PATH:$GOPATH/bin
 
 二、FastFabric
 1、下载到指定目录
+cd ~/go/src/github.com/hyperleger/
+git clone https://github.com/cgorenflo/fabric.git
 2、添加
 3、配置脚本参数
 （1）custom_parameters.sh
