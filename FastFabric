@@ -23,6 +23,163 @@ git clone https://github.com/cgorenflo/fabric.git
 2、添加
 3、配置脚本参数
 （1）custom_parameters.sh
+#!/usr/bin/env bash
+
+
+export PEER_DOMAIN="org1.example.com"           # can be anything if running on localhost
+export ORDERER_DOMAIN="example.com"        # can be anything if running on localhost
+
+# fill in the addresses without domain suffix and without ports
+export FAST_PEER_ADDRESS="fastpeer0"
+export ORDERER_ADDRESS="orderer"
+
+# leave endorser address and storage address blank if you want to run on a single server
+export ENDORSER_ADDRESS=("endorser0")      # can define multiple addresses in the form ( "addr1" "addr2" ... )
+export STORAGE_ADDRESS="storage0"
+
+export CHANNEL="mychannel"               # the name of the created channel of the network
+export CHAINCODE="benchmark"             # the name of the chaincode used on the channel
+
+该脚本会生成部分目录和文件如下：
+crypto-config
+├── ordererOrganizations
+│   └── example.com
+│       ├── ca
+│       │   ├── 0ea63287d85bbd30cc3cd6f1726a84bbc30e5239734520d0ad9cd733e319d967_sk
+│       │   └── ca.example.com-cert.pem
+│       ├── msp
+│       │   ├── admincerts
+│       │       └── Admin@example.com-cert.pem
+│       │        
+│       ├── orderers
+│       │   └── orderer.example.com
+│       │       ├── msp
+│       │       │   ├── admincerts
+│       │       │   │   └── Admin@example.com-cert.pem
+│       │       │   ├── cacerts
+│       │       │   │   └── ca.example.com-cert.pem
+│       │       │   ├── keystore
+│       │       │   │   └── 4969d4d0d05109a9c284fc3f7dc67b8124874f7343a5426237a9b5a220d6c2e2_sk
+│       │       │   ├── signcerts
+│       │       │   │   └── orderer.example.com-cert.pem
+│       │       │   └── tlscacerts
+│       │       │       └── tlsca.example.com-cert.pem
+│       │       └── tls
+│       │           
+│       │           
+│       │           
+│       └── users
+│           └── Admin@example.com
+│               ├── msp
+│               │   ├── admincerts
+│               │   │   └── Admin@example.com-cert.pem
+│               │   ├── cacerts
+│               │   │   └── ca.example.com-cert.pem
+│               │   ├── keystore
+│               │   │   └── 6c647d5f6a071ae07ea63162c877bb693f1a85ce5666e1aac24eafd0aa3c495a_sk
+│               │   ├── signcerts
+│                       └── Admin@example.com-cert.pem
+└── peerOrganizations
+    └── org1.example.com
+        ├── ca
+        │   ├── 22608ae58550070d3e245fdae4633b23251a75706af1165e42fa0269d2768558_sk
+        │   └── ca.org1.example.com-cert.pem
+        ├── msp
+        │   ├── admincerts
+        │   ├── cacerts
+        │   │   └── ca.org1.example.com-cert.pem
+        │   ├── config.yaml
+        │   └── tlscacerts
+        │       └── tlsca.org1.example.com-cert.pem
+        ├── peers
+        │   ├── endorser0.org1.example.com
+        │   │   ├── msp
+        │   │   │   ├── admincerts
+        │   │   │   ├── cacerts
+        │   │   │   │   └── ca.org1.example.com-cert.pem
+        │   │   │   ├── config.yaml
+        │   │   │   ├── keystore
+        │   │   │   │   └── d8450a55796c757c4c70c1dbdc94f757544f67b015c252b5e1cc289acf214093_sk
+        │   │   │   ├── signcerts
+        │   │   │       └── endorser0.org1.example.com-cert.pem
+        │   │   └── tls
+        │   │       ├── ca.crt
+        │   │       ├── server.crt
+        │   │       └── server.key
+        │   ├── fastpeer0.org1.example.com
+        │   │   ├── msp
+        │   │   │   ├── admincerts
+        │   │   │   ├── cacerts
+        │   │   │   │   └── ca.org1.example.com-cert.pem
+        │   │   │   ├── config.yaml
+        │   │   │   ├── keystore
+        │   │   │   │   └── a599153fdf871d5bcdfad9a7d7782bc3bb0be3225db4232c3674c6de10e4c6d1_sk
+        │   │   │   ├── signcerts
+        │   │   │   │   └── fastpeer0.org1.example.com-cert.pem
+        │   │   │   └── tlscacerts
+        │   │   │       └── tlsca.org1.example.com-cert.pem
+        │   │   └── tls
+        │   │       ├── ca.crt
+        │   │       ├── server.crt
+        │   │       └── server.key
+        │   └── storage0.org1.example.com
+        │       ├── msp
+        │       │   ├── admincerts
+        │       │   ├── cacerts
+        │       │   │   └── ca.org1.example.com-cert.pem
+        │       │   ├── config.yaml
+        │       │   ├── keystore
+        │       │   │   └── 4c2cbebaa34a76836bf7ae01a556fbf121533c18b855644e54a7bfae26317d5f_sk
+        │       │   ├── signcerts
+        │       │   │   └── storage0.org1.example.com-cert.pem
+        │       │   └── tlscacerts
+        │       │       └── tlsca.org1.example.com-cert.pem
+        │       └── tls
+        │           ├── ca.crt
+        │           ├── server.crt
+        │           └── server.key
+        ├── tlsca
+        │   ├── 20cf5431bdb4d0a882f0dbd0946db1e4c7f3ae956ab9de944aa359518f320f06_sk
+        │   └── tlsca.org1.example.com-cert.pem
+        └── users
+            ├── Admin@org1.example.com
+            │   ├── msp
+            │   │   ├── admincerts
+            │   │   ├── cacerts
+            │   │   │   └── ca.org1.example.com-cert.pem
+            │   │   ├── config.yaml
+            │   │   ├── keystore
+            │   │   │   └── 68d0e0c367357a0e4e62c7efe7f4c272e6f3e6f5923b73113e785e8d9b658434_sk
+            │   │   ├── signcerts
+            │   │   │   └── Admin@org1.example.com-cert.pem
+            │   │   └── tlscacerts
+            │   │       └── tlsca.org1.example.com-cert.pem
+            │   └── tls
+            │       ├── ca.crt
+            │       ├── client.crt
+            │       └── client.key
+            └── User1@org1.example.com
+                ├── msp
+                │   ├── admincerts
+                │   ├── cacerts
+                │   │   └── ca.org1.example.com-cert.pem
+                │   ├── config.yaml
+                │   ├── keystore
+                │   │   └── 29830045d7a7872f321e5cd07085fd3a8c8b7ba9d9bee282e31a502cbaabe2dd_sk
+                │   ├── signcerts
+                │   │   └── User1@org1.example.com-cert.pem
+                │   └── tlscacerts
+                │       └── tlsca.org1.example.com-cert.pem
+                └── tls
+                    ├── ca.crt
+                    ├── client.crt
+                    └── client.key
+
+76 directories, 70 files
+
+
+4、根据脚本参数修改各个节点的/etc/hosts和hostname
+
 4、运行脚本
 （1）Run create_artifact.sh to create the prerequisite files to setup the network, channel and anchor peer.
 （2）
